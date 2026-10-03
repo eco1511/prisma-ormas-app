@@ -4,7 +4,7 @@ import {Member} from "@/models/Member";
 import {Setting} from "@/models/Setting";
 import {getSession} from "@/lib/auth";
 import {saveUploadedFile,removeUploadedFile} from "@/lib/uploads";
-export async function GET(){const s=await getSession();if(!s||s.role!=="member"||!s.memberId)return NextResponse.json({message:"Unauthorized"},{status:401});await connectMongoDB();const [m,settings]=await Promise.all([Member.findById(s.memberId).lean(),Setting.findOne({key:'main'}).select('organizationName').lean<{organizationName?:string}>()]);if(!m)return NextResponse.json({message:'Anggota tidak ditemukan.'},{status:404});return NextResponse.json({...m,organizationName:settings?.organizationName?.trim()||(m as any).organizationName?.trim()||'PRISMA'},{headers:{'Cache-Control':'no-store'}});}
+export async function GET(){const s=await getSession();if(!s||s.role!=="member"||!s.memberId)return NextResponse.json({message:"Unauthorized"},{status:401});await connectMongoDB();const [m,settings]=await Promise.all([Member.findById(s.memberId).lean(),Setting.findOne({key:'main'}).select('organizationName logoUrl').lean<{organizationName?:string;logoUrl?:string}>()]);if(!m)return NextResponse.json({message:'Anggota tidak ditemukan.'},{status:404});return NextResponse.json({...m,organizationName:settings?.organizationName?.trim()||(m as any).organizationName?.trim()||'PRISMA',logoUrl:settings?.logoUrl||''},{headers:{'Cache-Control':'no-store'}});}
 export async function PATCH(req:Request){
  const s=await getSession();if(!s||s.role!=="member"||!s.memberId)return NextResponse.json({message:"Unauthorized"},{status:401});
  await connectMongoDB();const m=await Member.findById(s.memberId);if(!m)return NextResponse.json({message:"Anggota tidak ditemukan."},{status:404});

@@ -3,18 +3,39 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Bell, UserPlus, Shuffle } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Modal } from "./Modal";
+
 type Item = { id: string; title: string; message: string; name: string; position: string; region: string; href: string; createdAt: string; read: boolean };
 type Feed = { items: Item[]; unread: number; snapshot: string };
 export function Notifications() {
   const router = useRouter();
   const requestVersion = useRef(0);
   const marking = useRef(false);
+  const container = useRef<HTMLDivElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const panel = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const [feed, setFeed] = useState<Feed>({ items: [], unread: 0, snapshot: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [busy, setBusy] = useState(false);
+  useEffect(() => {
+    if (!open) return;
+    panel.current?.focus();
+    const dismiss = (event: PointerEvent | FocusEvent) => {
+      if (!container.current?.contains(event.target as Node)) setOpen(false);
+    };
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") { setOpen(false); trigger.current?.focus(); }
+    };
+    document.addEventListener("pointerdown", dismiss);
+    document.addEventListener("focusin", dismiss);
+    document.addEventListener("keydown", escape);
+    return () => {
+      document.removeEventListener("pointerdown", dismiss);
+      document.removeEventListener("focusin", dismiss);
+      document.removeEventListener("keydown", escape);
+    };
+  }, [open]);
   const load = useCallback(async (signal?: AbortSignal) => {
     if (marking.current) return;
     const version = ++requestVersion.current;
@@ -40,14 +61,16 @@ export function Notifications() {
     catch (e) { setError((e as Error).message); }
     finally { marking.current = false; setBusy(false); setLoading(false); void load(); }
   }
-  return <><button type="button" aria-label={"Notifikasi, " + feed.unread + " belum dibaca"} onClick={() => { setOpen(true); void load(); }} className="relative rounded-xl p-2.5 text-slate-600 hover:bg-blue-50 hover:text-blue-700"><Bell size={21}/>{feed.unread > 0 && <span className="absolute -right-1 -top-1 min-w-5 rounded-full bg-rose-600 px-1 text-center text-[10px] font-bold leading-5 text-white">{feed.unread > 99 ? "99+" : feed.unread}</span>}</button>
-    {open && <Modal title="Notifikasi Pengurus" onClose={() => setOpen(false)}>
+  return <div ref={container} className="relative"><button ref={trigger} type="button" aria-expanded={open} aria-controls="notifications-dropdown" aria-label={"Notifikasi, " + feed.unread + " belum dibaca"} onClick={() => { setOpen(!open); if (!open) void load(); }} className="relative rounded-xl p-2.5 text-slate-600 hover:bg-blue-50 hover:text-blue-700"><Bell size={21}/>{feed.unread > 0 && <span className="absolute -right-1 -top-1 min-w-5 rounded-full bg-rose-600 px-1 text-center text-[10px] font-bold leading-5 text-white">{feed.unread > 99 ? "99+" : feed.unread}</span>}</button>
+    {open && <div ref={panel} id="notifications-dropdown" role="region" aria-labelledby="notifications-title" tabIndex={-1} className="absolute -right-32 top-full z-50 mt-3 w-[calc(100vw-2.5rem)] max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl outline-none sm:right-0 sm:w-[28rem]">
+      <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3"><h2 id="notifications-title" className="font-bold text-slate-900">Notifikasi Pengurus</h2><button type="button" aria-label="Tutup notifikasi" onClick={() => { setOpen(false); trigger.current?.focus(); }} className="rounded-lg px-3 py-1 text-slate-500 hover:bg-slate-100">Tutup</button></div>
+      <div className="max-h-[min(32rem,calc(100dvh-7rem))] overflow-y-auto overscroll-contain p-4">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3"><p className="text-sm text-slate-500">{feed.unread} notifikasi belum dibaca</p><button type="button" className="btn-secondary text-xs" disabled={busy || loading || !feed.unread || !feed.snapshot || Boolean(error)} onClick={() => void markRead()}>{busy ? "Menyimpan..." : "Tandai semua dibaca"}</button></div>
       {error && <div role="alert" className="mb-4 rounded-xl bg-rose-50 p-3 text-sm text-rose-700">{error}<button type="button" onClick={() => void load()} className="ml-2 font-bold underline">Coba lagi</button></div>}
       {loading && !feed.items.length ? <p role="status" className="py-8 text-center text-slate-500">Memuat notifikasi...</p> : !feed.items.length && !error ? <p className="py-8 text-center text-slate-500">Tidak ada notifikasi yang belum dibaca.</p> : <div className="space-y-2">{feed.items.map(item => <Link key={item.id} href={item.href} onClick={event => { event.preventDefault(); void markRead(item); }} aria-disabled={busy} className={"flex gap-3 rounded-xl border p-4 transition hover:border-blue-300 " + (item.read ? "border-slate-100 bg-white" : "border-blue-100 bg-blue-50")}>
         <div className="rounded-lg bg-white p-2 text-blue-600">{item.href.includes("mutasi") ? <Shuffle size={18}/> : <UserPlus size={18}/>}</div><div className="min-w-0 flex-1"><div className="flex items-center gap-2"><h3 className="text-sm font-bold">{item.title}</h3>{!item.read && <span className="h-2 w-2 rounded-full bg-blue-600" aria-label="Belum dibaca"/>}</div><p className="mt-1 break-words text-sm text-slate-600">{item.message}</p><dl className="mt-3 space-y-1 text-xs text-slate-600">{[["Nama", item.name], ["Jabatan", item.position], ["Wilayah", item.region]].map(([label, value]) => <div key={label} className="flex gap-2"><dt className="w-14 shrink-0 text-slate-500">{label}</dt><dd className="min-w-0 break-words font-semibold">{value}</dd></div>)}</dl><time className="mt-2 block text-xs text-slate-400" dateTime={item.createdAt}>{new Date(item.createdAt).toLocaleString("id-ID", { timeZone: "Asia/Jakarta" })}</time></div>
       </Link>)}</div>}
       {feed.items.length === 50 && <p className="mt-4 text-xs text-slate-500">Menampilkan 50 notifikasi terbaru.</p>}
-    </Modal>}
-  </>;
+    </div></div>}
+  </div>;
 }
