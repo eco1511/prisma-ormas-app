@@ -7,6 +7,7 @@ import {saveUploadedFile,removeUploadedFile} from "@/lib/uploads";
 import {validateMembership} from "@/lib/membership";
 import {writeAudit} from "@/lib/audit";
 import {registrationConflict} from "@/lib/registration-conflict";
+import {MAX_REGISTRATION_FILE_SIZE_BYTES} from "@/lib/upload-constraints";
 export const runtime="nodejs";
 export async function POST(req:Request){
  const uploaded:string[]=[];let member:any=null;let committed=false;let created=false;
@@ -26,7 +27,7 @@ export async function POST(req:Request){
   const accounts=await User.find({$or:[{nik},{email}]}).select('role memberId nik email').lean();
   if(accounts.some((u:any)=>!previous||u.role!=='member'||String(u.memberId)!==String(previous._id)))return NextResponse.json({message:"NIK atau email masih digunakan oleh akun pengguna. Hubungi pengurus untuk memeriksa akun tersebut."},{status:409});
   const files:Record<string,string>={};
-  try{for(const key of ["photo","ktp"]){files[key+"Url"]=await saveUploadedFile(f.get(key) as File|null,key);if(files[key+"Url"])uploaded.push(files[key+"Url"])}}catch(e){await Promise.all(uploaded.map(removeUploadedFile));return NextResponse.json({message:(e as Error).message},{status:400})}
+  try{for(const key of ["photo","ktp"]){files[key+"Url"]=await saveUploadedFile(f.get(key) as File|null,key,{maxSizeBytes:MAX_REGISTRATION_FILE_SIZE_BYTES,maxSizeMessage:"Ukuran berkas maksimal 500 KB."});if(files[key+"Url"])uploaded.push(files[key+"Url"])}}catch(e){await Promise.all(uploaded.map(removeUploadedFile));return NextResponse.json({message:(e as Error).message},{status:400})}
   const data={name:val("name"),nik,email,phone:val("phone"),gender:val("gender"),address:val("address"),...membership,...files,status:"pending",verificationNotes:"",verifiedAt:null,verifiedBy:null};
   if(previous){
    await User.updateMany({role:'member',memberId:previous._id},{$set:{active:false}});
@@ -39,6 +40,5 @@ export async function POST(req:Request){
   return NextResponse.json({success:true,message:"Pendaftaran berhasil. Data menunggu verifikasi pengurus. Akun dan kata sandi dikirim ke email setelah pendaftaran diterima."},{status:201});
  }catch(e:any){if(!committed){if(member&&created)await Member.deleteOne({_id:member._id});await Promise.all(uploaded.map(removeUploadedFile))}console.error(e);return NextResponse.json({message:e?.code===11000?"Data sudah digunakan.":"Pendaftaran gagal."},{status:e?.code===11000?409:500})}
 }
-
 
 
