@@ -1,0 +1,5 @@
+﻿import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {rejectionMessage,rejectionResultMessage} from '../lib/rejection-email';
+test('email penolakan berisi pemohon, jenis permohonan dan alasan',()=>{for(const requestType of ['pendaftaran anggota','Mutasi']){const m=rejectionMessage({name:'Pemohon',email:'pemohon@example.test',requestType,reason:'Dokumen belum lengkap'},'https://prisma.example.test');assert.equal(m.to.address,'pemohon@example.test');assert.ok(m.text.includes(requestType));assert.ok(m.text.includes('Dokumen belum lengkap'));assert.ok(m.text.includes('https://prisma.example.test/login/anggota'));assert.ok(!m.text.includes('Kata sandi'))}});
+test('alasan kosong dan kegagalan email diberitahukan dengan benar',()=>{assert.ok(rejectionMessage({name:'Pemohon',email:'pemohon@example.test',requestType:'Mutasi',reason:'  '},'https://prisma.example.test').text.includes('Tidak ada catatan tambahan'));assert.ok(rejectionResultMessage(false).includes('gagal dikirim'));assert.ok(rejectionResultMessage(false).includes('sudah tersimpan'));assert.ok(rejectionResultMessage(true).includes('telah dikirim'))});

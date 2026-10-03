@@ -1,0 +1,1 @@
+import {AdminShell} from "@/components/AdminShell";import {VerificationClient} from "@/components/VerificationClient";export default function Page(){return <AdminShell><VerificationClient/></AdminShell>}

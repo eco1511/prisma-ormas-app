@@ -1,0 +1,3 @@
+import {NextResponse} from "next/server";import {connectMongoDB} from "@/lib/mongodb";import {Setting} from "@/models/Setting";import {getSession} from "@/lib/auth";
+export async function GET(){await connectMongoDB();const row=await Setting.findOneAndUpdate({key:"main"},{$setOnInsert:{key:"main"}},{new:true,upsert:true}).lean();return NextResponse.json(row);}
+export async function PATCH(req:Request){const s=await getSession();if(!s||!["admin","superadmin"].includes(s.role))return NextResponse.json({message:"Unauthorized"},{status:401});await connectMongoDB();const b=await req.json();const row=await Setting.findOneAndUpdate({key:"main"},{$set:b},{new:true,upsert:true});return NextResponse.json(row);}

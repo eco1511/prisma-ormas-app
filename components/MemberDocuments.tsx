@@ -1,0 +1,7 @@
+﻿"use client";
+import {useState} from "react";
+export function MemberDocuments({member,onSaved}:{member:any;onSaved:(m:any)=>void}){
+ const [message,setMessage]=useState("");const [busy,setBusy]=useState(false);
+ async function submit(e:React.FormEvent<HTMLFormElement>){e.preventDefault();const form=e.currentTarget;setBusy(true);setMessage("");try{const r=await fetch("/api/profile",{method:"PATCH",body:new FormData(form)});const d=await r.json();if(!r.ok)throw Error(d.message);onSaved(d);form.reset();setMessage("Dokumen berhasil disimpan.")}catch(e){setMessage((e as Error).message||"Unggah gagal.")}finally{setBusy(false)}}
+ return <form onSubmit={submit} className="card mt-6 max-w-3xl space-y-5 p-6"><h2 className="text-xl font-bold">Foto dan Dokumen Anggota</h2><p className="text-sm text-slate-500">Maksimal 5 MB per berkas. KTP dan SK hanya dapat diakses oleh Anda dan pengurus.</p>{[["photo","Foto anggota","photoUrl"],["ktp","KTP","ktpUrl"],["sk","SK Pengangkatan","skUrl"]].map(([key,label,url])=><div key={key}><label className="label" htmlFor={key}>{label}</label><input id={key} name={key} type="file" className="input" accept={key==="photo"?"image/jpeg,image/png":"image/jpeg,image/png,application/pdf"}/>{member[url]&&<a href={member[url]} target="_blank" rel="noreferrer" className="mt-2 inline-block text-sm text-blue-600">Lihat {label}</a>}</div>)}{message&&<p role="status" className="text-sm">{message}</p>}<button className="btn-primary" disabled={busy}>{busy?"Menyimpan...":"Simpan Dokumen"}</button></form>;
+}

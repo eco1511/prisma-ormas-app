@@ -1,0 +1,1 @@
+import {AdminShell} from "@/components/AdminShell";import {SuperAdminClient} from "@/components/SuperAdminClient";export default function Page(){return <div className="min-h-screen bg-slate-950"><AdminShell superadmin><div className="-m-5 min-h-[calc(100vh-4rem)] bg-slate-950 p-5 lg:-m-8 lg:p-8"><SuperAdminClient/></div></AdminShell></div>}

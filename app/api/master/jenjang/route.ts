@@ -1,0 +1,3 @@
+import { NextResponse } from "next/server";import {connectMongoDB} from "@/lib/mongodb";import {MasterLevel} from "@/models/MasterLevel";import {getSession} from "@/lib/auth";
+export async function GET(){await connectMongoDB();return NextResponse.json(await MasterLevel.find().sort({order:1,name:1}).lean());}
+export async function POST(req:Request){const s=await getSession();if(!s||!["admin","superadmin"].includes(s.role))return NextResponse.json({message:"Unauthorized"},{status:401});await connectMongoDB();const b=await req.json();return NextResponse.json(await MasterLevel.create(b),{status:201});}

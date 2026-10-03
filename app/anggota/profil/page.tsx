@@ -1,0 +1,1 @@
+import {MemberShell} from "@/components/MemberShell";import {MemberProfileClient} from "@/components/MemberProfileClient";export default function Page(){return <MemberShell><MemberProfileClient/></MemberShell>}

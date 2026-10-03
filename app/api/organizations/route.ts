@@ -1,0 +1,3 @@
+import {NextResponse} from "next/server";import {connectMongoDB} from "@/lib/mongodb";import {Organization} from "@/models/Organization";import {getSession} from "@/lib/auth";
+export async function GET(){const s=await getSession();if(!s||s.role!=="superadmin")return NextResponse.json({message:"Unauthorized"},{status:401});await connectMongoDB();return NextResponse.json(await Organization.find().sort({name:1}).lean());}
+export async function POST(req:Request){const s=await getSession();if(!s||s.role!=="superadmin")return NextResponse.json({message:"Unauthorized"},{status:401});await connectMongoDB();return NextResponse.json(await Organization.create(await req.json()),{status:201});}

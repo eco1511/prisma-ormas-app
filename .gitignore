@@ -1,0 +1,16 @@
+node_modules
+.next
+.tsbuildinfo
+tsconfig.tsbuildinfo
+.env
+.env.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.DS_Store
+public/uploads/*
+!public/uploads/.gitkeep
+storage/uploads/
+outputs/
+tmp/

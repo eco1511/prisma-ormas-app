@@ -1,0 +1,18 @@
+﻿"use client";
+import { useState } from "react";
+import { MembershipFields } from "./MembershipFields";
+import { CheckCircle2 } from "lucide-react";
+export function RegisterForm(){const [msg,setMsg]=useState("");const [err,setErr]=useState("");const [loading,setLoading]=useState(false);
+ async function submit(e:React.FormEvent<HTMLFormElement>){e.preventDefault();setLoading(true);setErr("");setMsg("");const form=e.currentTarget;try{const res=await fetch('/api/register',{method:'POST',body:new FormData(form)});const d=await res.json();setLoading(false);if(!res.ok){setErr(d.message||'Pendaftaran gagal');return;}setMsg(d.message);form.reset();}catch{setErr('Koneksi gagal. Silakan coba kembali.')}finally{setLoading(false)}}
+ return <form onSubmit={submit} className="card overflow-hidden"><div className="border-b border-slate-100 bg-slate-50 px-6 py-5"><h3 className="text-lg font-black">Formulir Pendaftaran Anggota</h3><p className="mt-1 text-sm text-slate-500">Data akan masuk ke antrean verifikasi pengurus. Kata sandi dikirim ke email setelah pendaftaran diterima.</p></div><div className="grid gap-5 p-6 md:grid-cols-2">
+ {err&&<div className="md:col-span-2 rounded-xl bg-rose-50 p-3 text-sm font-semibold text-rose-700">{err}</div>}{msg&&<div className="md:col-span-2 flex items-center gap-2 rounded-xl bg-emerald-50 p-3 text-sm font-semibold text-emerald-700"><CheckCircle2 size={18}/>{msg}</div>}
+ <Field label="Nama Lengkap" name="name" placeholder="Masukkan nama lengkap"/><Field label="NIK" name="nik" type="text" placeholder="16 digit NIK" inputMode="numeric" minLength={16} maxLength={16} pattern="[0-9]{16}" title="NIK harus terdiri dari tepat 16 angka." onInput={e=>{const input=e.currentTarget;input.value=input.value.replace(/[^0-9]/g,"").slice(0,16);input.setCustomValidity("")}} onInvalid={e=>e.currentTarget.setCustomValidity("NIK harus terdiri dari tepat 16 angka.")}/><Field label="Email" name="email" type="email" placeholder="nama@email.com"/><Field label="No. WhatsApp" name="phone" placeholder="081234567890"/>
+ <div><label className="label">Jenis Kelamin</label><select className="select" name="gender"><option value="">Pilih</option><option>Laki-laki</option><option>Perempuan</option></select></div>
+ <MembershipFields/>
+ <div className="md:col-span-2"><label className="label">Alamat Lengkap</label><textarea name="address" className="input min-h-28" placeholder="Jl. Nama Jalan, RT/RW, Kecamatan..." required/></div>
+ <div><label className="label">Foto Profil</label><input className="input" type="file" name="photo" accept="image/jpeg,image/png"/></div><div><label className="label">Dokumen KTP</label><input className="input" type="file" name="ktp" accept="image/jpeg,image/png,application/pdf"/></div>
+ <p className="text-sm text-slate-500 md:col-span-2">Maksimal 5 MB per berkas. Foto: JPG/PNG. KTP: JPG/PNG/PDF.</p><div className="md:col-span-2"><label className="flex items-start gap-3 text-sm text-slate-600"><input type="checkbox" required className="mt-1"/>Saya menyatakan data yang diberikan benar dan dapat diverifikasi pengurus.</label></div><button disabled={loading} className="btn-primary md:col-span-2 py-3">{loading?'Mengirim...':'Kirim Pendaftaran'}</button></div></form>}
+function Field(props:React.InputHTMLAttributes<HTMLInputElement>&{label:string}){const {label,...rest}=props;return <div><label className="label">{label}</label><input className="input" required {...rest}/></div>}
+
+
+

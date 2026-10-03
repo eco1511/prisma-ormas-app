@@ -1,0 +1,2 @@
+import {NextResponse} from "next/server";import {connectMongoDB} from "@/lib/mongodb";import {Organization} from "@/models/Organization";import {getSession} from "@/lib/auth";
+export async function DELETE(_:Request,{params}:{params:Promise<{id:string}>}){const s=await getSession();if(!s||s.role!=="superadmin")return NextResponse.json({message:"Unauthorized"},{status:401});await connectMongoDB();const {id}=await params;await Organization.findByIdAndDelete(id);return NextResponse.json({success:true});}

@@ -1,0 +1,1 @@
+import {AdminShell} from "@/components/AdminShell";import {MasterDataClient} from "@/components/MasterDataClient";export default function Page(){return <AdminShell><MasterDataClient type="jabatan"/></AdminShell>}

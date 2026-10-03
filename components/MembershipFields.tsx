@@ -1,0 +1,11 @@
+﻿"use client";
+import {useState} from "react";
+import regions from "@/data/regions.json";
+import {POSITIONS} from "@/lib/membership";
+type InitialMembership={membershipType?:string;branchType?:string;provinceId?:string;cityId?:string;position?:string};
+export function MembershipFields({initial={}}:{initial?:InitialMembership}={}){
+ const [type,setType]=useState(initial.membershipType|| (initial.branchType==="Pusat"?"Pusat":"Cabang"));const [branch,setBranch]=useState(["Provinsi","Kabupaten/Kota"].includes(initial.branchType||"")?initial.branchType!:"Provinsi");const [province,setProvince]=useState(initial.provinceId||"");const [city,setCity]=useState(initial.cityId||"");
+ return <><div><label className="label" htmlFor="membershipType">Pusat / Cabang</label><select id="membershipType" name="membershipType" className="select" value={type} onChange={e=>{setType(e.target.value);setProvince("");setCity("")}}><option>Pusat</option><option>Cabang</option></select></div>
+ {type==="Cabang"&&<><div><label className="label" htmlFor="branchType">Tingkat Wilayah</label><select id="branchType" name="branchType" className="select" value={branch} onChange={e=>{setBranch(e.target.value);setCity("")}}><option>Provinsi</option><option>Kabupaten/Kota</option></select></div><div><label className="label" htmlFor="provinceId">Provinsi</label><select id="provinceId" name="provinceId" className="select" required value={province} onChange={e=>{setProvince(e.target.value);setCity("")}}><option value="">Pilih provinsi</option>{regions.provinces.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select></div><div><label className="label" htmlFor="cityId">Kabupaten / Kota</label><select id="cityId" name="cityId" className="select disabled:bg-slate-100" disabled={branch==="Provinsi"||!province} required={branch==="Kabupaten/Kota"} value={city} onChange={e=>setCity(e.target.value)}><option value="">{branch==="Provinsi"?"Tidak berlaku untuk cabang provinsi":"Pilih kabupaten/kota"}</option>{regions.regencies.filter(c=>c.provinceId===province).map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></div></>}
+ <div><label className="label" htmlFor="position">Jabatan</label><select id="position" name="position" className="select" defaultValue={initial.position||"Anggota"}>{POSITIONS.map(p=><option key={p}>{p}</option>)}</select></div></>;
+}

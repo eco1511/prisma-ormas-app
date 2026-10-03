@@ -1,0 +1,1 @@
+import {AdminShell} from "@/components/AdminShell";import {AdminDashboardClient} from "@/components/AdminDashboardClient";export default function Page(){return <AdminShell><AdminDashboardClient/></AdminShell>}
