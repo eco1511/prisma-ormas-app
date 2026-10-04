@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 657 657">
+  <defs>
+    <linearGradient id="cyan" x2="1" y2="1">
+      <stop stop-color="#92cbd0"/>
+      <stop offset="1" stop-color="#1485a4"/>
+    </linearGradient>
+    <linearGradient id="green" x2="1" y2="1">
+      <stop stop-color="#92be72"/>
+      <stop offset="1" stop-color="#30946c"/>
+    </linearGradient>
+    <linearGradient id="gold" x2="1" y2="1">
+      <stop stop-color="#ffe15b"/>
+      <stop offset="1" stop-color="#f8a526"/>
+    </linearGradient>
+    <linearGradient id="orange" x2="1" y2="1">
+      <stop stop-color="#ff9d32"/>
+      <stop offset="1" stop-color="#e86328"/>
+    </linearGradient>
+    <linearGradient id="blue" x2="1" y2="1">
+      <stop stop-color="#2a88af"/>
+      <stop offset="1" stop-color="#235581"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(36.5 -20)" stroke-linejoin="round">
+    <path fill="#70bbc1" d="M68 145 292 20 180 204Z"/>
+    <path fill="#97d1d9" d="M68 145 225 124 180 204Z"/>
+    <path fill="url(#green)" d="M180 204 292 20 292 142Z"/>
+    <path fill="#459d6c" d="M292 20 404 204 292 142Z"/>
+    <path fill="#a6ca5b" d="M292 20 516 145 356 124Z"/>
+    <path fill="#ffd94e" d="M356 124 516 145 404 204Z"/>
+    <path fill="url(#gold)" d="M404 204 516 145 516 386Z"/>
+    <path fill="#faa82c" d="M404 204 449 275 516 145Z"/>
+    <path fill="#ffca42" d="M449 275 516 145 516 386Z"/>
+    <path fill="url(#orange)" d="M404 326 516 386 292 508Z"/>
+    <path fill="#f9882c" d="M404 326 516 386 350 403Z"/>
+    <path fill="#ee702a" d="M350 403 516 386 292 508Z"/>
+    <path fill="#24858d" d="M404 326 292 508 292 386Z"/>
+    <path fill="#11697c" d="M180 326 292 386 292 508Z"/>
+    <path fill="url(#blue)" d="M68 145 180 204 180 326 68 386Z"/>
+    <path fill="#64b1c7" d="M68 145 180 204 135 275Z"/>
+    <path fill="#1689a5" d="M68 145 135 275 68 386Z"/>
+    <path fill="#216d9c" d="M135 275 180 204 180 326 68 386Z"/>
+    <path fill="#29527b" d="M68 386 180 326 237 404Z"/>
+    <path fill="#286b87" d="M68 386 237 404 292 508Z"/>
+    <path fill="#0d879a" d="M68 398 180 461 180 614 68 677Z"/>
+    <path fill="url(#cyan)" d="M191 318 292 153 292 264Z"/>
+    <path fill="#4ca2be" d="M292 153 394 318 292 264Z"/>
+    <path fill="#33779b" d="M191 318 292 264 292 374Z"/>
+    <path fill="#285686" d="M292 264 394 318 292 374Z"/>
+  </g>
+</svg>
